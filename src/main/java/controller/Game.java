@@ -15,9 +15,10 @@ import java.util.*;
  *
  * @author Juan-Pablo Silva
  */
-public class Game implements Observer {
+public class Game implements Observer,Visitor {
     private int balls;
     private Level currentLevel;
+    private int currentPoints;
 
     public Game(int balls) {
         this.balls = balls;
@@ -140,6 +141,7 @@ public class Game implements Observer {
      */
     public void setCurrentLevel(Level level) {
         currentLevel = level;
+        level.addGameObserver(this);
     }
 
     /**
@@ -166,7 +168,7 @@ public class Game implements Observer {
      * @return the cumulative points
      */
     public int getCurrentPoints() {
-        return 0;
+        return currentPoints;
     }
 
     /**
@@ -184,7 +186,9 @@ public class Game implements Observer {
      * @return the new number of available balls
      */
     public int dropBall() {
-        balls -= 1;
+        if(!isGameOver()){
+            balls -= 1;
+        }
         return balls;
     }
 
@@ -208,19 +212,36 @@ public class Game implements Observer {
     }
 
     @Override
-    public void update(Observable o, Object arg) {
-        LogicElement obs = (LogicElement) arg;
-        obs.accept(new Visitor());
+    public void visitRealLevel(RealLevel realLevel) {
+
     }
 
-    /*
+    @Override
+    public void visitNullLevel(NullLevel nullLevel) {
+
+    }
+
+    @Override
+    public void visitGlassBrick(GlassBrick glassBrick) {
+        currentPoints += glassBrick.getScore();
+    }
+
+    @Override
+    public void visitWoodenBrick(WoodenBrick woodenBrick) {
+        currentPoints += woodenBrick.getScore();
+
+    }
+
+    @Override
+    public void visitMetalBrick(MetalBrick metalBrick) {
+        currentPoints += metalBrick.getScore();
+
+    }
+
     @Override
     public void update(Observable o, Object arg) {
-        visitBrick((Brick) arg);
+        LogicElement obs = (LogicElement) arg;
+        obs.accept(this);
     }
 
-    private void visitBrick(Brick arg) {
-
-    }
-    */
 }

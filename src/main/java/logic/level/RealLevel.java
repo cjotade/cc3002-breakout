@@ -1,5 +1,6 @@
 package logic.level;
 
+import controller.Game;
 import controller.LogicElement;
 import controller.Visitor;
 import logic.brick.Brick;
@@ -47,6 +48,10 @@ public class RealLevel extends AbstractLevel implements LogicElement {
 
     public void setNextLevel(Level level) {
         next = level;
+    }
+
+    public void addGameObserver(Game game) {
+        addObserver(game);
     }
 
 

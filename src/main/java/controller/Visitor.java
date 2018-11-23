@@ -10,23 +10,10 @@ import logic.level.RealLevel;
 /**
  * Class who will notify to game when .
  */
-public class Visitor {
-    public void visitRealLevel(RealLevel realLevel){
-
-    }
-    public void visitNullLevel(NullLevel nullLevel){
-
-    }
-
-    public void visitGlassBrick(GlassBrick glassBrick){
-        glassBrick.
-    }
-
-    public void visitWoodenBrick(WoodenBrick woodenBrick){
-
-    }
-
-    public void visitMetalBrick(MetalBrick metalBrick){
-
-    }
+public interface Visitor {
+    void visitRealLevel(RealLevel realLevel);
+    void visitNullLevel(NullLevel nullLevel);
+    void visitGlassBrick(GlassBrick glassBrick);
+    void visitWoodenBrick(WoodenBrick woodenBrick);
+    void visitMetalBrick(MetalBrick metalBrick);
 }

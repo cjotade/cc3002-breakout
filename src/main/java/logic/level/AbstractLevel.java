@@ -39,14 +39,9 @@ public abstract class AbstractLevel extends Observable implements Level{
 
     @Override
     public int getPoints() {
-        return 0;
-    }
-
-    public void setScoreLevel(int scoreLevel) {
-        this.scoreLevel = scoreLevel;
-    }
-
-    public int getScoreLevel() {
+        for(Brick brick : brickList){
+            scoreLevel += brick.getScore();
+        }
         return scoreLevel;
     }
 }

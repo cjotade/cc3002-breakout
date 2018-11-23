@@ -1,5 +1,6 @@
 package logic.level;
 
+import controller.Game;
 import controller.LogicElement;
 import controller.Visitor;
 import logic.brick.Brick;
@@ -36,6 +37,10 @@ public class NullLevel extends AbstractLevel implements LogicElement {
         return this;
     }
 
+    @Override
+    public void addGameObserver(Game game) {
+
+    }
 
     public void setNextLevel(Level level) {
         next = this;
