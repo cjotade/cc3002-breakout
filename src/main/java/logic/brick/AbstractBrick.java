@@ -1,6 +1,8 @@
 package logic.brick;
 
-public abstract class AbstractBrick implements Brick{
+import java.util.Observable;
+
+public abstract class AbstractBrick extends Observable implements Brick{
     private int hits;
     private int score;
 
@@ -13,7 +15,13 @@ public abstract class AbstractBrick implements Brick{
     public void hit() {
         if(remainingHits() != 0) {
             hits -= 1;
+            if(isDestroyed()){
+                setChanged();
+                notifyObservers(this); //le paso el ladrillo
+            }
         }
+
+
     }
 
     @Override

@@ -3,15 +3,23 @@ package logic.level;
 import logic.brick.Brick;
 
 import java.util.List;
+import java.util.Observable;
 
-public abstract class AbstractLevel implements Level{
-    private String name;
-    private List<Brick> brickList;
-    private Level next;
+public abstract class AbstractLevel extends Observable implements Level{
+    protected String name;
+    protected List<Brick> brickList;
+    protected Level next;
+    protected int scoreLevel;
 
     public AbstractLevel(String name, List<Brick> brickList) {
         this.name = name;
         this.brickList = brickList;
+        scoreLevel = 0;
+    }
+
+    public AbstractLevel(String name, List<Brick> brickList, Level next) {
+        this(name,brickList);
+        this.next = next;
     }
 
     @Override
@@ -30,27 +38,15 @@ public abstract class AbstractLevel implements Level{
     }
 
     @Override
-    public Level getNextLevel() {
-        return next;
-    }
-
-    @Override
     public int getPoints() {
         return 0;
     }
 
-    @Override
-    public Level addPlayingLevel(Level level) {
-        return null;
+    public void setScoreLevel(int scoreLevel) {
+        this.scoreLevel = scoreLevel;
     }
 
-    @Override
-    public void setNextLevel(Level level) {
-        next = level;
-    }
-
-    @Override
-    public boolean hasNextLevel() {
-        return getNextLevel().isPlayableLevel();
+    public int getScoreLevel() {
+        return scoreLevel;
     }
 }

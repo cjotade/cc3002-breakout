@@ -1,55 +1,33 @@
 package logic.level;
 
-import logic.brick.AbstractBrick;
+import controller.LogicElement;
+import controller.Visitor;
 import logic.brick.Brick;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Observable;
 
-public class NullLevel implements Level {
-    private String name;
-    List<Brick> brickList;
-    private Level next;
-    public NullLevel() {
-        name = "";
-        brickList = new ArrayList<Brick>();
+public class NullLevel extends AbstractLevel implements LogicElement {
+
+    public NullLevel(){
+        super("", new ArrayList<Brick>());
         next = this;
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public int getNumberOfBricks() {
-        return 0;
-    }
-
-    @Override
-    public List<Brick> getBricks() {
-        return brickList;
-    }
-
-    @Override
     public Level getNextLevel() {
-        return next;
+        return this;
     }
 
-    @Override
     public boolean isPlayableLevel() {
         return false;
     }
 
     @Override
     public boolean hasNextLevel() {
-        return getNextLevel().isPlayableLevel();
+        return false;
     }
 
-    @Override
-    public int getPoints() {
-        return 0;
-    }
 
     @Override
     public Level addPlayingLevel(Level level) {
@@ -58,8 +36,18 @@ public class NullLevel implements Level {
         return this;
     }
 
-    @Override
+
     public void setNextLevel(Level level) {
         next = this;
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visitNullLevel(this);
     }
 }
