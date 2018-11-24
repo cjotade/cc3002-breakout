@@ -1,5 +1,8 @@
 package logic.brick;
 
+import controller.Game;
+import logic.level.Level;
+
 import java.util.Observable;
 
 public abstract class AbstractBrick extends Observable implements Brick{
@@ -17,7 +20,7 @@ public abstract class AbstractBrick extends Observable implements Brick{
             remainingHits -= 1;
             if(isDestroyed()){
                 setChanged();
-                notifyObservers(this); //le paso el ladrillo
+                notifyObservers(this);
             }
         }
     }
@@ -37,6 +40,13 @@ public abstract class AbstractBrick extends Observable implements Brick{
         return remainingHits;
     }
 
+    @Override
+    public void subscribeLevelObserver(Level o){
+        addObserver(o);
+    }
 
-
+    @Override
+    public void subscribeGameObserver(Game o) {
+        addObserver(o);
+    }
 }

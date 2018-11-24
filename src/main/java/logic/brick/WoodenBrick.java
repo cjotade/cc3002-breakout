@@ -2,6 +2,9 @@ package logic.brick;
 
 import controller.LogicElement;
 import controller.Visitor;
+import logic.level.Level;
+
+import java.util.Observer;
 
 public class WoodenBrick extends AbstractBrick implements LogicElement {
     public WoodenBrick() {

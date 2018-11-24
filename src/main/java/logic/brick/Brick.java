@@ -1,5 +1,8 @@
 package logic.brick;
 
+import controller.Game;
+import logic.level.Level;
+
 /**
  * Interface that represents a brick object.
  * <p>
@@ -36,4 +39,7 @@ public interface Brick {
     int remainingHits();
 
 
+    void subscribeLevelObserver(Level o);
+
+    void subscribeGameObserver(Game o);
 }

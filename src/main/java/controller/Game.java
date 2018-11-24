@@ -19,6 +19,8 @@ public class Game implements Observer,Visitor {
     private int balls;
     private Level currentLevel;
     private int currentPoints;
+    private int acumLevelPoints;
+    private boolean isWinner = false;
 
     public Game(int balls) {
         this.balls = balls;
@@ -37,23 +39,7 @@ public class Game implements Observer,Visitor {
      * @see Level
      */
     public Level newLevelWithBricksFull(String name, int numberOfBricks, double probOfGlass, double probOfMetal, int seed) {
-        Random rand = new Random(seed);
-        List<Brick> brickList = new ArrayList<>();
-        for(int i = 0; i<numberOfBricks; i++) {
-            double prob = rand.nextDouble();
-            if (prob < probOfGlass) {
-                brickList.add(new GlassBrick());
-            } else {
-                brickList.add(new WoodenBrick());
-            }
-        }
-        for(int j = 0; j<numberOfBricks; j++){
-            double probM = rand.nextDouble();
-            if (probM < probOfMetal){
-                brickList.add(new MetalBrick());
-            }
-        }
-        Level level = new RealLevel(name,brickList);
+        Level level = new RealLevel(name,numberOfBricks,probOfGlass,probOfMetal,seed);
         return level;
     }
 
@@ -139,9 +125,20 @@ public class Game implements Observer,Visitor {
      * @param level the level to be used as the current level
      * @see Level
      */
+    /*
     public void setCurrentLevel(Level level) {
         currentLevel = level;
-        level.addGameObserver(this);
+        currentLevel.subscribeGameObserver(this);
+    }
+    */
+    public void setCurrentLevel(Level level) {
+        currentLevel = level;
+        currentLevel.subscribeGameObserver(this);
+        List<Brick> levelBricks = currentLevel.getBricks();
+        for(Brick brick: levelBricks){
+            brick.subscribeGameObserver(this);
+        }
+
     }
 
     /**
@@ -208,34 +205,47 @@ public class Game implements Observer,Visitor {
      */
 
     public boolean winner() {
-        return false;
+        boolean isWinner = getCurrentLevel().isPlayableLevel();
+        return !isWinner && currentPoints >0;
     }
 
     @Override
     public void visitRealLevel(RealLevel realLevel) {
+        acumLevelPoints += currentLevel.getPoints();
+        if(currentPoints == acumLevelPoints) {
+            goNextLevel();
+            realLevel.subscribeGameObserver(this);
+        }
 
     }
 
     @Override
     public void visitNullLevel(NullLevel nullLevel) {
-
+        isWinner = true;
+        nullLevel.subscribeGameObserver(this);
     }
 
     @Override
     public void visitGlassBrick(GlassBrick glassBrick) {
         currentPoints += glassBrick.getScore();
+        glassBrick.subscribeGameObserver(this);
     }
+
 
     @Override
     public void visitWoodenBrick(WoodenBrick woodenBrick) {
         currentPoints += woodenBrick.getScore();
+        woodenBrick.subscribeGameObserver(this);
 
     }
 
     @Override
     public void visitMetalBrick(MetalBrick metalBrick) {
         currentPoints += metalBrick.getScore();
-
+        if(metalBrick.isDestroyed()) {
+            balls += 1;
+        }
+        metalBrick.subscribeGameObserver(this);
     }
 
     @Override

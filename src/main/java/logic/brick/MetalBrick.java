@@ -2,6 +2,10 @@ package logic.brick;
 
 import controller.LogicElement;
 import controller.Visitor;
+import logic.level.Level;
+
+import java.util.Observable;
+import java.util.Observer;
 
 public class MetalBrick extends AbstractBrick implements LogicElement {
     public MetalBrick() {

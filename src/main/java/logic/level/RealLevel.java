@@ -7,15 +7,25 @@ import logic.brick.Brick;
 
 import java.util.List;
 import java.util.Observable;
+import java.util.Observer;
 
 public class RealLevel extends AbstractLevel implements LogicElement {
 
-    public RealLevel(String name, List<Brick> brickList) {
-        super(name,brickList,new NullLevel());
+    public RealLevel(String name, int numberOfBricks, double probOfGlass, double probOfMetal, int seed) {
+        super(name, numberOfBricks, probOfGlass, probOfMetal, seed, new NullLevel());
     }
 
-    public RealLevel(String name, List<Brick> brickList, Level next) {
-        super(name,brickList,next);
+    public RealLevel(String name, int numberOfBricks, double probOfGlass, double probOfMetal, int seed, Level next) {
+        super(name, numberOfBricks, probOfGlass, probOfMetal, seed, next);
+    }
+
+    public RealLevel(String name, List<Brick> brickList) {
+        super(name, brickList);
+    }
+
+    public RealLevel(String name, List<Brick> brickList, Level next){
+        this(name,brickList);
+        this.next = next;
     }
 
     //recorrer lista ladrillos y agregar nivel como observador
@@ -50,14 +60,13 @@ public class RealLevel extends AbstractLevel implements LogicElement {
         next = level;
     }
 
-    public void addGameObserver(Game game) {
-        addObserver(game);
-    }
-
-
     @Override
     public void update(Observable o, Object arg) {
-        scoreLevel += ((Brick) arg).getScore();
+        currentScoreLevel += ((Brick) arg).getScore();
+        if(currentScoreLevel == scoreLevel){
+            setChanged();
+            notifyObservers(this);
+        }
     }
 
     @Override

@@ -37,10 +37,6 @@ public class NullLevel extends AbstractLevel implements LogicElement {
         return this;
     }
 
-    @Override
-    public void addGameObserver(Game game) {
-
-    }
 
     public void setNextLevel(Level level) {
         next = this;
@@ -48,7 +44,8 @@ public class NullLevel extends AbstractLevel implements LogicElement {
 
     @Override
     public void update(Observable o, Object arg) {
-
+        setChanged();
+        notifyObservers(this);
     }
 
     @Override
