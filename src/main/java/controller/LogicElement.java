@@ -2,6 +2,8 @@ package controller;
 
 /**
  * Interface that will be implemented by classes that use Visitor pattern.
+ *
+ * @author Camilo Jara Do Nascimento
  */
 public interface LogicElement {
     /**

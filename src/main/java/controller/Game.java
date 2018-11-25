@@ -14,13 +14,13 @@ import java.util.*;
  * Game logic controller class.
  *
  * @author Juan-Pablo Silva
+ * @author Camilo Jara Do Nascimento
  */
 public class Game implements Observer,Visitor {
     private int balls;
     private Level currentLevel;
     private int currentPoints;
     private int acumLevelPoints;
-    //private boolean isWinner = false;
 
     public Game(){
         this(3);
@@ -92,7 +92,6 @@ public class Game implements Observer,Visitor {
      */
     public void goNextLevel() {
         setCurrentLevel(getCurrentLevel().getNextLevel());
-        //isWinner = getCurrentLevel().isPlayableLevel() & currentPoints>0;
     }
 
     /**
@@ -201,11 +200,8 @@ public class Game implements Observer,Visitor {
      *
      * @return true if the player won the game, false otherwise
      */
-
     public boolean winner() {
-        boolean isWinner = getCurrentLevel().isPlayableLevel();
-        return !isWinner && currentPoints >0;
-        //return !isWinner;
+        return !getCurrentLevel().isPlayableLevel() && currentPoints >0;
     }
 
     @Override
@@ -215,15 +211,7 @@ public class Game implements Observer,Visitor {
             goNextLevel();
             realLevel.subscribeGameObserver(this);
         }
-
     }
-    /*
-    @Override
-    public void visitNullLevel(NullLevel nullLevel) {
-        //isWinner = true;
-        //nullLevel.subscribeGameObserver(this);
-    }
-    */
 
     @Override
     public void visitGlassBrick(GlassBrick glassBrick) {
@@ -241,7 +229,6 @@ public class Game implements Observer,Visitor {
 
     @Override
     public void visitMetalBrick(MetalBrick metalBrick) {
-        currentPoints += metalBrick.getScore();
         if(metalBrick.isDestroyed()) {
             balls += 1;
         }
@@ -253,5 +240,4 @@ public class Game implements Observer,Visitor {
         LogicElement obs = (LogicElement) arg;
         obs.accept(this);
     }
-
 }

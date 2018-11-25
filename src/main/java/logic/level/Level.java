@@ -76,5 +76,11 @@ public interface Level extends Observer {
      */
     void setNextLevel(Level level);
 
+    /**
+     * Add observer (Game).
+     *
+     * @param game a Game Observer.
+     * @see Game
+     */
     void subscribeGameObserver(Game game);
 }

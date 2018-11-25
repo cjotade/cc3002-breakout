@@ -38,8 +38,19 @@ public interface Brick {
      */
     int remainingHits();
 
-
+    /**
+     * Add observer (Level).
+     *
+     * @param o a Level Observer
+     * @see Level
+     */
     void subscribeLevelObserver(Level o);
 
+    /**
+     * Add observer (Game).
+     *
+     * @param o a Game Observer
+     * @see Game
+     */
     void subscribeGameObserver(Game o);
 }

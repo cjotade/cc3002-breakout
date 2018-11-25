@@ -2,11 +2,16 @@ package logic.brick;
 
 import controller.LogicElement;
 import controller.Visitor;
-import logic.level.Level;
 
-import java.util.Observer;
-
+/**
+ * Class for a WoodenBrick.
+ *
+ * @author Camilo Jara Do Nascimento.
+ */
 public class WoodenBrick extends AbstractBrick implements LogicElement {
+    /**
+     * Constructor for a default WoodenBrick.
+     */
     public WoodenBrick() {
         super(3, 200);
     }

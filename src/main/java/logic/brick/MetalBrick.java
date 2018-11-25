@@ -2,12 +2,16 @@ package logic.brick;
 
 import controller.LogicElement;
 import controller.Visitor;
-import logic.level.Level;
 
-import java.util.Observable;
-import java.util.Observer;
-
+/**
+ * Class for a MetalBrick.
+ *
+ * @author Camilo Jara Do Nascimento.
+ */
 public class MetalBrick extends AbstractBrick implements LogicElement {
+    /**
+     * Constructor for a default MetalBrick.
+     */
     public MetalBrick() {
         super(10, 0);
     }

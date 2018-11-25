@@ -5,10 +5,21 @@ import logic.level.Level;
 
 import java.util.Observable;
 
+/**
+ * Abstract class that represents general behavior of Bricks.
+ *
+ * @author Camilo Jara Do Nascimento
+ */
 public abstract class AbstractBrick extends Observable implements Brick{
     private int remainingHits;
     private int score;
 
+    /**
+     * Constructor for a AbstractBrick setting its remainingHits and score.
+     *
+     * @param hits
+     * @param score
+     */
     public AbstractBrick(int hits, int score){
         this.remainingHits = hits;
         this.score = score;
