@@ -23,14 +23,6 @@ El juego observa al nivel y los bricks. El nivel informa cuando alcanza el punta
 ### Visitor+Observer
 El juego Observa a los LogicElements (Levels y Bricks) los cuales envían el aumento de puntos, cambio de numero de bolas o cambio de nivel.
 
-Dado que dependiendo de lo que reciba la mesa como notificación debe hacer cosas diferentes, se implementó un visitor. Para ello, se creó una interfaz visitor que es implementada por AbstractTable y una interfaz Notification que es implementada por AbstractHittable y AbstractBonus.
-
-Si a la mesa se le manda un hittable es para que se aumente el puntaje de Game, con lo que se manda en una notificación a Game con en cuanto debe aumentar su puntaje.
-
-Si a la mesa se le mandan un ExtraBallBonus o un JackPotBonus, esta se encarga de llamar al método trigger de estos.
-
-Si a la mesa se le manda un DropTargetBonus, se aumenta la cantidad de droptTargets que se han botado, se revisa si se cumple la condición para hacer trigger a este Bonus, y en caso de que se cumpla llama al método trigger de este.
-
 ## Cómo correr el programa
 Clonar el repositorio.
 
