@@ -30,4 +30,4 @@ Abrir Intellij IDEA.
 
 Presionar Import Project, seleccionar el proyecto.
 
-Para correr los test hacer click derecho en la carpeta java que está dentro de test. Seleccionar "Run All Tests"
+Para correr los test hacer click derecho en la carpeta java que está dentro de test. Seleccionar "BrickTest", "GameTest", "LevelsTest".
