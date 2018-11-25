@@ -38,8 +38,4 @@ Abrir Intellij IDEA.
 
 Presionar Import Project, seleccionar el proyecto.
 
-Seleccionar "Import project from external model" y Maven.
-
-Presionar next, hasta llegar a finish, ahí apretar finish y esperar a que se cargue el proyecto.
-
 Para correr los test hacer click derecho en la carpeta java que está dentro de test. Seleccionar "Run All Tests"
