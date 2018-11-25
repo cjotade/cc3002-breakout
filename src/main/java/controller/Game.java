@@ -20,8 +20,11 @@ public class Game implements Observer,Visitor {
     private Level currentLevel;
     private int currentPoints;
     private int acumLevelPoints;
-    private boolean isWinner = false;
+    //private boolean isWinner = false;
 
+    public Game(){
+        this(3);
+    }
     public Game(int balls) {
         this.balls = balls;
         currentLevel = new NullLevel();
@@ -89,6 +92,7 @@ public class Game implements Observer,Visitor {
      */
     public void goNextLevel() {
         setCurrentLevel(getCurrentLevel().getNextLevel());
+        //isWinner = getCurrentLevel().isPlayableLevel() & currentPoints>0;
     }
 
     /**
@@ -125,12 +129,6 @@ public class Game implements Observer,Visitor {
      * @param level the level to be used as the current level
      * @see Level
      */
-    /*
-    public void setCurrentLevel(Level level) {
-        currentLevel = level;
-        currentLevel.subscribeGameObserver(this);
-    }
-    */
     public void setCurrentLevel(Level level) {
         currentLevel = level;
         currentLevel.subscribeGameObserver(this);
@@ -207,6 +205,7 @@ public class Game implements Observer,Visitor {
     public boolean winner() {
         boolean isWinner = getCurrentLevel().isPlayableLevel();
         return !isWinner && currentPoints >0;
+        //return !isWinner;
     }
 
     @Override
@@ -218,12 +217,13 @@ public class Game implements Observer,Visitor {
         }
 
     }
-
+    /*
     @Override
     public void visitNullLevel(NullLevel nullLevel) {
-        isWinner = true;
-        nullLevel.subscribeGameObserver(this);
+        //isWinner = true;
+        //nullLevel.subscribeGameObserver(this);
     }
+    */
 
     @Override
     public void visitGlassBrick(GlassBrick glassBrick) {

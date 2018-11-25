@@ -15,20 +15,15 @@ public class RealLevel extends AbstractLevel implements LogicElement {
         super(name, numberOfBricks, probOfGlass, probOfMetal, seed, new NullLevel());
     }
 
-    public RealLevel(String name, int numberOfBricks, double probOfGlass, double probOfMetal, int seed, Level next) {
-        super(name, numberOfBricks, probOfGlass, probOfMetal, seed, next);
-    }
-
     public RealLevel(String name, List<Brick> brickList) {
         super(name, brickList);
+        this.next = new NullLevel();
     }
 
     public RealLevel(String name, List<Brick> brickList, Level next){
         this(name,brickList);
         this.next = next;
     }
-
-    //recorrer lista ladrillos y agregar nivel como observador
 
 
     public boolean isPlayableLevel() {

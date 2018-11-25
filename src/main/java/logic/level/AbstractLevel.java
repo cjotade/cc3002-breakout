@@ -32,10 +32,6 @@ public abstract class AbstractLevel extends Observable implements Level{
         scoreLevel = getPoints();
     }
 
-    public AbstractLevel(String name, List<Brick> brickList, Level next) {
-        this(name,brickList);
-        this.next = next;
-    }
 
     public List<Brick> createListBricks(int numberOfBricks, double probOfGlass, double probOfMetal, int seed){
         List<Brick> brickList = new ArrayList<>();

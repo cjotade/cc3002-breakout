@@ -8,7 +8,7 @@ import logic.brick.Brick;
 import java.util.ArrayList;
 import java.util.Observable;
 
-public class NullLevel extends AbstractLevel implements LogicElement {
+public class NullLevel extends AbstractLevel {
 
     public NullLevel(){
         super("", new ArrayList<Brick>());
@@ -32,8 +32,8 @@ public class NullLevel extends AbstractLevel implements LogicElement {
 
     @Override
     public Level addPlayingLevel(Level level) {
-        next = this;
-        level.addPlayingLevel(this);
+        //next = this;
+        //level.addPlayingLevel(this);
         return this;
     }
 
@@ -44,12 +44,14 @@ public class NullLevel extends AbstractLevel implements LogicElement {
 
     @Override
     public void update(Observable o, Object arg) {
-        setChanged();
-        notifyObservers(this);
+        //setChanged();
+        //notifyObservers(this);
     }
-
+    /*
     @Override
     public void accept(Visitor visitor) {
-        visitor.visitNullLevel(this);
+        //visitor.visitNullLevel(this);
     }
+    */
+
 }

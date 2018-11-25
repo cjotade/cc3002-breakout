@@ -12,7 +12,7 @@ import logic.level.RealLevel;
  */
 public interface Visitor {
     void visitRealLevel(RealLevel realLevel);
-    void visitNullLevel(NullLevel nullLevel);
+    //void visitNullLevel(NullLevel nullLevel);
     void visitGlassBrick(GlassBrick glassBrick);
     void visitWoodenBrick(WoodenBrick woodenBrick);
     void visitMetalBrick(MetalBrick metalBrick);
