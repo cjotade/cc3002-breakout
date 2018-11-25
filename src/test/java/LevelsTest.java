@@ -142,47 +142,6 @@ public class LevelsTest {
         assertTrue(hw2.winner());
     }
 
-    /*
-    @Test
-    public void spotTargetHitTest(){
-        game.setTable(fullTable);
-
-        for(Target target :game.getGameTable().getSpotTargetList()){
-            assertEquals(true,target.isActive());
-        }
-
-        for(Target target :game.getGameTable().getSpotTargetList()){
-            target.hit();
-        }
-        assertEquals(game.getScore(),5*100000);
-        for(Target target :game.getGameTable().getSpotTargetList()){
-            assertEquals(false,target.isActive());
-        }
-    }
-
-    @Test
-    public void upgradeBumpersTest(){
-        game.setTable(fullTable);
-
-        for(Bumper bumper:game.getGameTable().getBumpers()){
-            assertEquals(false,bumper.isUpgraded());
-        }
-        game.getGameTable().upgradeAllBumpers();
-
-        for(Bumper bumper:game.getGameTable().getBumpers()){
-            assertEquals(true,bumper.isUpgraded());
-        }
-    }
-
-    @Test
-    public void playableTableTest(){
-        assertFalse(emptyTable.isPlayableTable());
-        assertTrue(fullTable.isPlayableTable());
-        game.setTable(fullTable);
-        List<Target> asdasd = game.getGameTable().getTargets();
-    }
-    */
-
     private void repeat(int n, Runnable action) {
         IntStream.range(0, n).forEach(i -> action.run());
     }
