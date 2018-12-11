@@ -83,4 +83,10 @@ public interface Level extends Observer {
      * @see Game
      */
     void subscribeGameObserver(Game game);
+
+    /**
+     * Subtracts 1 to the currentNumberOfBricks
+     *
+     */
+    void brickDestroyed();
 }

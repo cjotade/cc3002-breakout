@@ -215,22 +215,28 @@ public class Game implements Observer,Visitor {
 
     @Override
     public void visitGlassBrick(GlassBrick glassBrick) {
-        currentPoints += glassBrick.getScore();
+        if(glassBrick.isDestroyed()){
+            currentPoints += glassBrick.getScore();
+            getCurrentLevel().brickDestroyed();
+        }
         glassBrick.subscribeGameObserver(this);
     }
 
 
     @Override
     public void visitWoodenBrick(WoodenBrick woodenBrick) {
-        currentPoints += woodenBrick.getScore();
+        if(woodenBrick.isDestroyed()){
+            currentPoints += woodenBrick.getScore();
+            getCurrentLevel().brickDestroyed();
+        }
         woodenBrick.subscribeGameObserver(this);
-
     }
 
     @Override
     public void visitMetalBrick(MetalBrick metalBrick) {
         if(metalBrick.isDestroyed()) {
             balls += 1;
+            getCurrentLevel().brickDestroyed();
         }
         metalBrick.subscribeGameObserver(this);
     }

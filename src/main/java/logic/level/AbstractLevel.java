@@ -19,6 +19,7 @@ public abstract class AbstractLevel extends Observable implements Level{
     protected Level next;
     protected int scoreLevel;
     protected int currentScoreLevel = 0;
+    protected int currentNumberOfBricks;
 
     /**
      * Constructor for an AbstractLevel setting its name, number of bricks,
@@ -34,6 +35,7 @@ public abstract class AbstractLevel extends Observable implements Level{
         this.name = name;
         brickList = createListBricks(numberOfBricks,probOfGlass,probOfMetal,seed);
         scoreLevel = getPoints();
+        currentNumberOfBricks = brickList.size();
     }
 
     /**
@@ -62,6 +64,7 @@ public abstract class AbstractLevel extends Observable implements Level{
         this.name = name;
         this.brickList = brickList;
         scoreLevel = getPoints();
+        currentNumberOfBricks = brickList.size();
     }
 
     /**
@@ -82,10 +85,13 @@ public abstract class AbstractLevel extends Observable implements Level{
                 GlassBrick glassBrick = new GlassBrick();
                 glassBrick.subscribeLevelObserver(this);
                 brickList.add(glassBrick);
-            } else {
+                currentNumberOfBricks++;
+            }
+            else {
                 WoodenBrick woodenBrick = new WoodenBrick();
                 woodenBrick.subscribeLevelObserver(this);
                 brickList.add(woodenBrick);
+                currentNumberOfBricks++;
             }
         }
         for(int j = 0; j<numberOfBricks; j++){
@@ -94,9 +100,15 @@ public abstract class AbstractLevel extends Observable implements Level{
                 MetalBrick metalBrick = new MetalBrick();
                 metalBrick.subscribeLevelObserver(this);
                 brickList.add(new MetalBrick());
+                currentNumberOfBricks++;
             }
         }
         return brickList;
+    }
+
+    @Override
+    public void brickDestroyed(){
+        currentNumberOfBricks--;
     }
 
     @Override
@@ -106,7 +118,7 @@ public abstract class AbstractLevel extends Observable implements Level{
 
     @Override
     public int getNumberOfBricks() {
-        return brickList.size();
+        return currentNumberOfBricks;
     }
 
     @Override

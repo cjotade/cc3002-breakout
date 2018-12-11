@@ -20,4 +20,19 @@ public class WoodenBrick extends AbstractBrick implements LogicElement {
     public void accept(Visitor visitor) {
         visitor.visitWoodenBrick(this);
     }
+
+    @Override
+    public boolean isGlassBrick() {
+        return false;
+    }
+
+    @Override
+    public boolean isWoodenBrick() {
+        return true;
+    }
+
+    @Override
+    public boolean isMetalBrick() {
+        return false;
+    }
 }

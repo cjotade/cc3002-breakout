@@ -53,4 +53,11 @@ public interface Brick {
      * @see Game
      */
     void subscribeGameObserver(Game o);
+
+    boolean isGlassBrick();
+
+    boolean isWoodenBrick();
+
+    boolean isMetalBrick();
+
 }
