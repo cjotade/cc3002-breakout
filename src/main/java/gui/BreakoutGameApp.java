@@ -14,6 +14,7 @@ import com.almasb.fxgl.settings.GameSettings;
 import gui.control.BallComponent;
 import gui.control.BarComponent;
 import gui.control.BrickComponent;
+import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -32,7 +33,7 @@ import static gui.BreakoutFactory.*;
 public class BreakoutGameApp extends GameApplication {
     private HomeworkTwoFacade hw2;
     private List<Entity> brickEntityList;
-    private InGamePanel panel;
+    private boolean initialBallCond = true;
 
     private int WIDTH = 1200;
     private int HEIGHT = 800;
@@ -46,8 +47,8 @@ public class BreakoutGameApp extends GameApplication {
         return getGameWorld().getSingleton(BreakoutType.BAR).get();
     }
 
-    private BallComponent getBallComponent() {
-        return getGameWorld().getSingleton(BreakoutType.BALL).get().getComponent(BallComponent.class);
+    private PhysicsComponent getBallComponent() {
+        return getGameWorld().getSingleton(BreakoutType.BALL).get().getComponent(PhysicsComponent.class);
     }
 
     private Entity getBallEntity() {
@@ -92,9 +93,9 @@ public class BreakoutGameApp extends GameApplication {
             protected void onAction() {
                 getBarComponent().right();
                 getGameState().increment("pixelsMoved", +5);
-                //if(getBallComponent().isInitialCond()) {
-                //    getBallComponent().right();
-                //}
+                if(initialBallCond) {
+                    repositionBall(getBallEntity());
+                }
             }
         }, KeyCode.D);
 
@@ -103,9 +104,9 @@ public class BreakoutGameApp extends GameApplication {
             protected void onAction() {
                 getBarComponent().left();
                 getGameState().increment("pixelsMoved", -5);
-                //if(getBallComponent().isInitialCond()) {
-                //    getBallComponent().left();
-                //}
+                if(initialBallCond) {
+                    repositionBall(getBallEntity());
+                }
             }
         }, KeyCode.A);
 
@@ -113,7 +114,7 @@ public class BreakoutGameApp extends GameApplication {
             @Override
             protected void onActionBegin() {
                 if(isPresentBall() && !hw2.isGameOver()) {
-                    //getBallComponent().setInitialCond(false);
+                    initialBallCond = false;
                     impulseBall(getBallEntity());
                 }
             }
@@ -126,7 +127,7 @@ public class BreakoutGameApp extends GameApplication {
                     removeEntitiesFromGameWorld();
                     brickEntityList = new ArrayList<>();
                 }
-                Level level = hw2.newLevelWithBricksFull("Level",30,0.5,0,1);
+                Level level = hw2.newLevelWithBricksFull("Level",30,0.5,1,1);
                 hw2.setCurrentLevel(level);
                 addHitteablesToEntities();
                 addEntitiesToGameWorld();
@@ -157,7 +158,9 @@ public class BreakoutGameApp extends GameApplication {
                 getBrickComponent(brick).hitBrick();
                 if (getBrickComponent(brick).isDestroyed()) {
                     if(getBrickComponent(brick).isMetalComponent()){
-                        getGameWorld().addEntity(newBall(getBarEntity().getCenter().getX(),getBarEntity().getY()-10));
+                        Entity newBallMetal = newBall(getBarEntity().getCenter().getX(),getBarEntity().getY()-10);
+                        getGameWorld().addEntity(newBallMetal);
+                        impulseBall(newBallMetal);
                         System.out.println("Ganaste una bola");
                     }
                     setUIgameScore(hw2.getCurrentPoints());
@@ -187,6 +190,7 @@ public class BreakoutGameApp extends GameApplication {
                 if(!isPresentBall() && !hw2.isGameOver()) {
                     Entity newBall = newBall(getBarEntity().getCenter().getX(), getBarEntity().getY()-10);
                     getGameWorld().addEntity(newBall);
+                    initialBallCond = true;
                 }
 
 
@@ -252,6 +256,13 @@ public class BreakoutGameApp extends GameApplication {
             entity.removeFromWorld();
         }
     }
+
+    private void repositionBall(Entity ball){
+        Point2D position = new Point2D(getBarEntity().getCenter().getX(),getBarEntity().getY()-10);
+        ball.getComponent(PhysicsComponent.class).reposition(position);
+    }
+
+
 
     private void impulseBall(Entity ball){
         PhysicsComponent physicsComponent = ball.getComponent(PhysicsComponent.class);
