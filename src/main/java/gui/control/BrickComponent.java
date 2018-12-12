@@ -18,4 +18,8 @@ public class BrickComponent extends Component {
     public boolean isDestroyed(){
         return brick.isDestroyed();
     }
+
+    public boolean isMetalComponent(){
+        return brick.isMetalBrick();
+    }
 }

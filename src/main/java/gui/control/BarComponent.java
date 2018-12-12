@@ -18,7 +18,6 @@ public class BarComponent extends Component {
     @Override
     public void onUpdate(double tpf) {
         speed = 1200 * (float)tpf;
-
         velocity.mulLocal(SPEED_DECAY);
         if (entity.getX() < 0) {
             velocity.set(BOUNCE_FACTOR * (float) -entity.getX(), 0);
@@ -26,7 +25,6 @@ public class BarComponent extends Component {
         else if (entity.getRightX() > FXGL.getApp().getWidth()) {
             velocity.set(BOUNCE_FACTOR * (float) -(entity.getRightX() - FXGL.getApp().getWidth()), 0);
         }
-
         physics.setBodyLinearVelocity(velocity);
     }
 

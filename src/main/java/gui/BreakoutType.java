@@ -1,6 +1,5 @@
 package gui;
 
 public enum BreakoutType {
-    BAR, BALL , WALL, LEFT_WALL , RIGHT_WALL, UPPER_WALL,
-    DROP_TARGET, SPOT_TARGET, BRICK, WOODEN_BRICK, METAL_BRICK
+    BAR, BALL , WALL, BRICK
 }
