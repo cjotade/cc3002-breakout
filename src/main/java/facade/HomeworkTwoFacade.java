@@ -182,4 +182,8 @@ public class HomeworkTwoFacade {
     public boolean winner() {
         return game.winner();
     }
+
+    public int getAcumLevelPoints() {
+        return game.getAcumLevelPoints();
+    }
 }

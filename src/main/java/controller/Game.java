@@ -204,6 +204,10 @@ public class Game implements Observer,Visitor {
         return !getCurrentLevel().isPlayableLevel() && currentPoints >0;
     }
 
+    public int getAcumLevelPoints() {
+        return acumLevelPoints;
+    }
+
     @Override
     public void visitRealLevel(RealLevel realLevel) {
         acumLevelPoints += currentLevel.getPoints();
@@ -243,7 +247,7 @@ public class Game implements Observer,Visitor {
 
     @Override
     public void update(Observable o, Object arg) {
-        LogicElement obs = (LogicElement) arg;
+          LogicElement obs = (LogicElement) arg;
         obs.accept(this);
     }
 }

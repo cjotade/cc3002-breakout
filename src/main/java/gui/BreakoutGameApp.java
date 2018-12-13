@@ -24,6 +24,7 @@ import logic.brick.Brick;
 import logic.level.Level;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -58,6 +59,7 @@ public class BreakoutGameApp extends GameApplication {
     private BrickComponent getBrickComponent(Entity brick){
         return brick.getComponent(BrickComponent.class);
     }
+
     private boolean isPresentBall() {
         return getGameWorld().getSingleton(BreakoutType.BALL).isPresent();
     }
@@ -97,6 +99,12 @@ public class BreakoutGameApp extends GameApplication {
                     repositionBall(getBallEntity());
                 }
             }
+            @Override
+            protected void onActionEnd() {
+                if(initialBallCond) {
+                    repositionBall(getBallEntity());
+                }
+            }
         }, KeyCode.D);
 
         input.addAction(new UserAction("Move Left Bar") {
@@ -108,31 +116,44 @@ public class BreakoutGameApp extends GameApplication {
                     repositionBall(getBallEntity());
                 }
             }
+            @Override
+            protected void onActionEnd() {
+                if(initialBallCond) {
+                    repositionBall(getBallEntity());
+                }
+            }
         }, KeyCode.A);
 
         input.addAction(new UserAction("Impulse Ball") {
             @Override
             protected void onActionBegin() {
-                if(isPresentBall() && !hw2.isGameOver()) {
+                if(isPresentBall() && Math.abs(getBallEntity().getY() - (getBarEntity().getY()-30)) <= 2 && !hw2.isGameOver()) {
                     initialBallCond = false;
                     impulseBall(getBallEntity());
                 }
             }
+
         }, KeyCode.SPACE);
 
         input.addAction(new UserAction("New Level") {
             @Override
             protected void onActionBegin() {
-                if(hw2.getCurrentLevel().isPlayableLevel()){
-                    removeEntitiesFromGameWorld();
+                int seed = (int)(System.currentTimeMillis());
+                if(!hw2.getCurrentLevel().isPlayableLevel()){
+                    //removeEntitiesFromGameWorld();
                     brickEntityList = new ArrayList<>();
+                    Level level = hw2.newLevelWithBricksFull("Level",30, 0.5, 1,seed);
+                    hw2.setCurrentLevel(level);
+                    addHitteablesToEntities();
+                    addEntitiesToGameWorld();
+                    setUInumberOfBalls(hw2.getBallsLeft());
+                    System.out.println("Nuevo Primer Nivel");
                 }
-                Level level = hw2.newLevelWithBricksFull("Level",30,0.5,1,1);
-                hw2.setCurrentLevel(level);
-                addHitteablesToEntities();
-                addEntitiesToGameWorld();
-                setUInumberOfBalls(hw2.getBallsLeft());
-                System.out.println("Nuevo Nivel");
+                else {
+                    Level newLevel = hw2.newLevelWithBricksFull("nextLevel", 7, 0.3, 1, seed);
+                    hw2.addPlayingLevel(newLevel);
+                    System.out.println("Añadiste un nuevo Nivel");
+                }
             }
 
         }, KeyCode.N);
@@ -159,12 +180,19 @@ public class BreakoutGameApp extends GameApplication {
                 if (getBrickComponent(brick).isDestroyed()) {
                     if(getBrickComponent(brick).isMetalComponent()){
                         Entity newBallMetal = newBall(getBarEntity().getCenter().getX(),getBarEntity().getY()-10);
-                        getGameWorld().addEntity(newBallMetal);
+                         getGameWorld().addEntity(newBallMetal);
                         impulseBall(newBallMetal);
                         System.out.println("Ganaste una bola");
                     }
                     setUIgameScore(hw2.getCurrentPoints());
                     brick.removeFromWorld();
+                    if(hw2.getCurrentPoints() == hw2.getAcumLevelPoints() && !brick.getComponent(BrickComponent.class).isMetalComponent()) {
+                        brickEntityList.clear();
+                        addHitteablesToEntities();
+                        addEntitiesToGameWorld();
+                        initialBallCond = true;
+                        repositionBall(getBallEntity());
+                    }
                 }
             }
         });
@@ -231,6 +259,7 @@ public class BreakoutGameApp extends GameApplication {
 
     private void addHitteablesToEntities(){
         List<Brick> brickList = hw2.getBricks();
+        Collections.shuffle(brickList);
         int i = 1; int j = 1;
         int x = 1; int y = 1;
         for(Brick brick : brickList) {
@@ -258,10 +287,10 @@ public class BreakoutGameApp extends GameApplication {
     }
 
     private void repositionBall(Entity ball){
-        Point2D position = new Point2D(getBarEntity().getCenter().getX(),getBarEntity().getY()-10);
+        Point2D position = new Point2D(getBarEntity().getCenter().getX(),getBarEntity().getY()-30);
         ball.getComponent(PhysicsComponent.class).reposition(position);
+        ball.getComponent(PhysicsComponent.class).setLinearVelocity(0,0);
     }
-
 
 
     private void impulseBall(Entity ball){
