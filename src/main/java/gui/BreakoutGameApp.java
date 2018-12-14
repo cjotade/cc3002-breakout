@@ -35,6 +35,7 @@ public class BreakoutGameApp extends GameApplication {
     private HomeworkTwoFacade hw2;
     private List<Entity> brickEntityList;
     private boolean initialBallCond = true;
+    private InGamePanel panel;
 
     private int WIDTH = 1200;
     private int HEIGHT = 800;
@@ -139,24 +140,45 @@ public class BreakoutGameApp extends GameApplication {
             @Override
             protected void onActionBegin() {
                 int seed = (int)(System.currentTimeMillis());
-                if(!hw2.getCurrentLevel().isPlayableLevel()){
-                    //removeEntitiesFromGameWorld();
+                if(!hw2.getCurrentLevel().isPlayableLevel() && !hw2.isGameOver()){
                     brickEntityList = new ArrayList<>();
-                    Level level = hw2.newLevelWithBricksFull("Level",30, 0.5, 1,seed);
+                    Level level = hw2.newLevelWithBricksFull("Level",2, 0.5, 1,seed);
                     hw2.setCurrentLevel(level);
                     addHitteablesToEntities();
                     addEntitiesToGameWorld();
                     setUInumberOfBalls(hw2.getBallsLeft());
+                    incUIlevelsLeft(+1);
                     System.out.println("Nuevo Primer Nivel");
                 }
                 else {
-                    Level newLevel = hw2.newLevelWithBricksFull("nextLevel", 7, 0.3, 1, seed);
+                    Level newLevel = hw2.newLevelWithBricksFull("nextLevel", 3, 0.3, 1, seed);
                     hw2.addPlayingLevel(newLevel);
+                    incUIlevelsLeft(+1);
                     System.out.println("Añadiste un nuevo Nivel");
                 }
             }
 
         }, KeyCode.N);
+
+        getInput().addAction(new UserAction("Open/Close Panel") {
+            @Override
+            protected void onActionBegin() {
+                if (panel.isOpen())
+                    panel.close();
+                else
+                    panel.open();
+            }
+        }, KeyCode.TAB);
+
+        getInput().addAction(new UserAction("Restart Game") {
+            @Override
+            protected void onActionBegin() {
+                if(hw2.isGameOver() || hw2.winner()){
+                    startNewGame();
+                    initialBallCond = true;
+                }
+            }
+        }, KeyCode.ENTER);
     }
 
     @Override
@@ -185,13 +207,31 @@ public class BreakoutGameApp extends GameApplication {
                         System.out.println("Ganaste una bola");
                     }
                     setUIgameScore(hw2.getCurrentPoints());
+                    setUIlevelScore(hw2.getAcumLevelPoints());
                     brick.removeFromWorld();
                     if(hw2.getCurrentPoints() == hw2.getAcumLevelPoints() && !brick.getComponent(BrickComponent.class).isMetalComponent()) {
+                        removeEntitiesFromGameWorld();
+                        incUIlevelsPlayed();
+                        incUIlevelsLeft(-1);
                         brickEntityList.clear();
                         addHitteablesToEntities();
                         addEntitiesToGameWorld();
                         initialBallCond = true;
                         repositionBall(getBallEntity());
+                    }
+                    if(hw2.winner()){
+                        Font largeFont = new Font("Winner",50);
+                        Text winnerText = new Text("CONGRATULATIONS YOU WIN!");
+                        winnerText.setTranslateX(250);
+                        winnerText.setTranslateY(350);
+                        winnerText.setFont(largeFont);
+                        getGameScene().addUINode(winnerText);
+                        Font largeFontRestart = new Font("gameOver",25);
+                        Text gameWin = new Text("Press ENTER to restart Game...");
+                        gameWin.setTranslateX(425);
+                        gameWin.setTranslateY(400);
+                        gameWin.setFont(largeFontRestart);
+                        getGameScene().addUINode(gameWin);
                     }
                 }
             }
@@ -208,46 +248,104 @@ public class BreakoutGameApp extends GameApplication {
                     System.out.println("Bola perdida");
                 }
                 if(hw2.isGameOver()){
-                    Font largeFont = new Font("gameFont",40);
-                    Text gameOverText = getUIFactory().newText("GAME OVER");
-                    gameOverText.setTranslateX(30);
-                    gameOverText.setTranslateY(200);
+                    Font largeFont = new Font("gameOver",100);
+                    Text gameOverText = new Text("GAME OVER");
+                    gameOverText.setTranslateX(300);
+                    gameOverText.setTranslateY(350);
                     gameOverText.setFont(largeFont);
-                    //panel.getChildren().add(gameOverText);
+                    getGameScene().addUINode(gameOverText);
+
+                    Font largeFontRestart = new Font("gameOver",25);
+                    Text gameRestart = new Text("Press ENTER to restart Game...");
+                    gameRestart.setTranslateX(425);
+                    gameRestart.setTranslateY(400);
+                    gameRestart.setFont(largeFontRestart);
+                    getGameScene().addUINode(gameRestart);
                 }
+
                 if(!isPresentBall() && !hw2.isGameOver()) {
                     Entity newBall = newBall(getBarEntity().getCenter().getX(), getBarEntity().getY()-10);
                     getGameWorld().addEntity(newBall);
                     initialBallCond = true;
                 }
-
-
             }
         });
     }
 
     @Override
     protected void initUI() {
-        Text textPixels = new Text();
-        textPixels.setTranslateX(50); // x = 50
-        textPixels.setTranslateY(100); // y = 100
+        panel = new InGamePanel();
+        Font largeFont = new Font("gameFont",25);
 
-        textPixels.textProperty().bind(getGameState().intProperty("pixelsMoved").asString());
-        getGameScene().addUINode(textPixels); // add to the scene graph
+        Text textScore = getUIFactory().newText("Actual Score:");
+        textScore.setTranslateX(30);
+        textScore.setTranslateY(50);
+        textScore.setFont(largeFont);
 
-        Text testScore = new Text("Actual Score:");
-        testScore.setTranslateX(50);
-        testScore.setTranslateY(200);
+        Text score = new Text();
 
-        testScore.textProperty().bind(getGameState().intProperty("actualScore").asString());
-        getGameScene().addUINode(testScore);
+        score.setTranslateX(220);
+        score.setTranslateY(50);
+        score.setFont(largeFont);
 
-        Text testBalls = new Text("Balls Left:");
-        testBalls.setTranslateX(50);
-        testBalls.setTranslateY(300);
+        Text textBalls = getUIFactory().newText("Balls Left:");
+        textBalls.setTranslateX(30);
+        textBalls.setTranslateY(150);
+        textBalls.setFont(largeFont);
 
-        testBalls.textProperty().bind(getGameState().intProperty("ballsLeft").asString());
-        getGameScene().addUINode(testBalls);
+        Text balls = new Text();
+        balls.setTranslateX(220);
+        balls.setTranslateY(150);
+        balls.setFont(largeFont);
+
+        Text textLevelPoints = getUIFactory().newText("Levels Score:");
+        textLevelPoints.setTranslateX(30);
+        textLevelPoints.setTranslateY(100);
+        textLevelPoints.setFont(largeFont);
+
+        Text levelPoints = new Text();
+        levelPoints.setTranslateX(220);
+        levelPoints.setTranslateY(100);
+        levelPoints.setFont(largeFont);
+
+        Text textLevelsPlayed = getUIFactory().newText("Levels Played:");
+        textLevelsPlayed.setTranslateX(30);
+        textLevelsPlayed.setTranslateY(200);
+        textLevelsPlayed.setFont(largeFont);
+
+        Text levelsPlayed = new Text();
+        levelsPlayed.setTranslateX(220);
+        levelsPlayed.setTranslateY(200);
+        levelsPlayed.setFont(largeFont);
+
+        Text textLevelsLeft = getUIFactory().newText("Levels Left:");
+        textLevelsLeft.setTranslateX(30);
+        textLevelsLeft.setTranslateY(250);
+        textLevelsLeft.setFont(largeFont);
+
+        Text levelsLeft = new Text();
+        levelsLeft.setTranslateX(220);
+        levelsLeft.setTranslateY(250);
+        levelsLeft.setFont(largeFont);
+
+        score.textProperty().bind(getGameState().intProperty("actualScore").asString());
+        balls.textProperty().bind(getGameState().intProperty("ballsLeft").asString());
+        levelPoints.textProperty().bind(getGameState().intProperty("levelScore").asString());
+        levelsPlayed.textProperty().bind(getGameState().intProperty("levelsPlayed").asString());
+        levelsLeft.textProperty().bind(getGameState().intProperty("levelsLeft").asString());
+
+        panel.getChildren().add(score);
+        panel.getChildren().add(textScore);
+        panel.getChildren().add(textBalls);
+        panel.getChildren().add(balls);
+        panel.getChildren().add(levelPoints);
+        panel.getChildren().add(textLevelPoints);
+        panel.getChildren().add(textLevelsPlayed);
+        panel.getChildren().add(levelsPlayed);
+        panel.getChildren().add(textLevelsLeft);
+        panel.getChildren().add(levelsLeft);
+
+        getGameScene().addUINode(panel);
     }
 
     @Override
@@ -255,6 +353,10 @@ public class BreakoutGameApp extends GameApplication {
         vars.put("pixelsMoved",0);
         vars.put("actualScore",0);
         vars.put("ballsLeft",0);
+        vars.put("levelsPlayed",0);
+        vars.put("levelsLeft",0);
+        vars.put("levelScore",0);
+
     }
 
     private void addHitteablesToEntities(){
@@ -321,7 +423,30 @@ public class BreakoutGameApp extends GameApplication {
         getGameState().setValue("actualScore", value);
     }
 
+    /**
+     * Set an score to GUI.
+     * @param value
+     */
+    private void setUIlevelScore(int value){
+        getGameState().setValue("levelScore", value);
+    }
 
+    /**
+     * Set an score to GUI.
+     *
+     */
+    private void incUIlevelsPlayed(){
+        getGameState().increment("levelsPlayed", +1);
+    }
+
+    /**
+     * Set an score to GUI.
+     * @param value
+     */
+    private void incUIlevelsLeft(int value){
+        getGameState().increment("levelsLeft", value);
+
+    }
 
 
 
