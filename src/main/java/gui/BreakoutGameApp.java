@@ -14,20 +14,36 @@ import com.almasb.fxgl.settings.GameSettings;
 import gui.control.BallComponent;
 import gui.control.BarComponent;
 import gui.control.BrickComponent;
+import javafx.animation.FadeTransition;
+import javafx.animation.Transition;
+import javafx.animation.TranslateTransition;
 import javafx.geometry.Point2D;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 import logic.brick.Brick;
 import logic.level.Level;
+import logic.level.RealLevel;
 
+import java.awt.event.ActionEvent;
+import java.beans.EventHandler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static com.sun.glass.ui.Cursor.setVisible;
 import static gui.BreakoutFactory.*;
 
 
@@ -283,7 +299,6 @@ public class BreakoutGameApp extends GameApplication {
         textScore.setFont(largeFont);
 
         Text score = new Text();
-
         score.setTranslateX(220);
         score.setTranslateY(50);
         score.setFont(largeFont);
@@ -334,6 +349,72 @@ public class BreakoutGameApp extends GameApplication {
         levelsPlayed.textProperty().bind(getGameState().intProperty("levelsPlayed").asString());
         levelsLeft.textProperty().bind(getGameState().intProperty("levelsLeft").asString());
 
+
+        VBox menu0 = new VBox(50);
+        menu0.setTranslateX(100);
+        menu0.setTranslateY(500);
+
+        VBox menu1 = new VBox(10);
+        menu1.setTranslateX(100);
+        menu1.setTranslateY(300);
+
+        Label nameLevel = new Label("Level name:");
+        TextField textFieldName = new TextField ();
+        menu1.getChildren().addAll(nameLevel, textFieldName);
+
+        Label numberOfBricks = new Label("Number of Bricks:");
+        TextField textFieldNumberBricks = new TextField ();
+        menu1.getChildren().addAll(numberOfBricks, textFieldNumberBricks);
+
+        Label probOfGlass = new Label("Prob of Glass:");
+        TextField textFieldGlass = new TextField ();
+        menu1.getChildren().addAll(probOfGlass, textFieldGlass);
+
+        Label probOfMetal = new Label("Prob of Metal:");
+        TextField textFieldMetal = new TextField ();
+        menu1.getChildren().addAll(probOfMetal, textFieldMetal);
+
+
+        Font fontCustom = Font.font(20);
+        Button btnCreateLevel = getUIFactory().newButton("Create!");
+        btnCreateLevel.setFont(fontCustom);
+        btnCreateLevel.setOnAction(event -> {
+            if(!textFieldName.getText().isEmpty() && !textFieldNumberBricks.getText().isEmpty() && !textFieldGlass.getText().isEmpty() && !textFieldMetal.getText().isEmpty()) {
+                Level customLevel = hw2.newLevelWithBricksFull(textFieldName.getText(), Integer.parseInt(textFieldNumberBricks.getText()), Integer.parseInt(textFieldGlass.getText()), Integer.parseInt(textFieldMetal.getText()), 1);
+                if (!hw2.getCurrentLevel().isPlayableLevel() && !hw2.isGameOver()) {
+                    brickEntityList = new ArrayList<>();
+                    hw2.setCurrentLevel(customLevel);
+                    addHitteablesToEntities();
+                    addEntitiesToGameWorld();
+                    setUInumberOfBalls(hw2.getBallsLeft());
+                    incUIlevelsLeft(+1);
+                } else {
+                    hw2.addPlayingLevel(customLevel);
+                    incUIlevelsLeft(+1);
+                }
+            }
+        });
+
+        Font font = Font.font(20);
+        Button btnNewLevel = getUIFactory().newButton("NEW LEVEL");
+        btnNewLevel.setFont(font);
+        btnNewLevel.setOnMouseClicked(event -> {
+            changeMenus(menu1,menu0);
+        });
+
+        Button btnBack = getUIFactory().newButton("BACK");
+        btnBack.setFont(font);
+        btnBack.setOnMouseClicked(event -> {
+            changeMenus(menu0,menu1);
+        });
+
+        menu0.getChildren().addAll(btnNewLevel);
+        menu1.getChildren().addAll(btnCreateLevel,btnBack);
+
+        Rectangle bg = new Rectangle();
+
+        panel.getChildren().addAll(bg,menu0);
+
         panel.getChildren().add(score);
         panel.getChildren().add(textScore);
         panel.getChildren().add(textBalls);
@@ -348,6 +429,7 @@ public class BreakoutGameApp extends GameApplication {
         getGameScene().addUINode(panel);
     }
 
+
     @Override
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("pixelsMoved",0);
@@ -359,6 +441,22 @@ public class BreakoutGameApp extends GameApplication {
 
     }
 
+    private void changeMenus(VBox fromMenu, VBox toMenu) {
+        panel.getChildren().add(fromMenu);
+
+        TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), toMenu);
+        tt.setToX(fromMenu.getTranslateX() - 400);
+
+        TranslateTransition tt1 = new TranslateTransition(Duration.seconds(0.5), fromMenu);
+        tt1.setToX(toMenu.getTranslateX());
+
+        tt.play();
+        tt1.play();
+
+        tt.setOnFinished(event1 -> {
+            panel.getChildren().remove(toMenu);
+        });
+    }
     private void addHitteablesToEntities(){
         List<Brick> brickList = hw2.getBricks();
         Collections.shuffle(brickList);
