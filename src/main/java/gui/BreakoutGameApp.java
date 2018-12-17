@@ -29,6 +29,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -91,7 +92,7 @@ public class BreakoutGameApp extends GameApplication {
     protected void preInit() {
         String backgroundMusic = "background.mpeg";
         getAudioPlayer().loopBGM(backgroundMusic);
-        getAudioPlayer().setGlobalMusicVolume(backgroundMusic.equals("background.mpeg")? 0.5:0.2);
+        getAudioPlayer().setGlobalMusicVolume(0.2);
         getAudioPlayer().setGlobalSoundVolume(1.5);
     }
 
@@ -210,7 +211,7 @@ public class BreakoutGameApp extends GameApplication {
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(BreakoutType.BAR,BreakoutType.BALL) {
             @Override
             protected void onCollisionBegin(Entity bar, Entity ball) {
-                changeBallVelocity(ball,1.3);
+                changeBallVelocity(ball,1.4);
             }
         });
 
@@ -261,15 +262,15 @@ public class BreakoutGameApp extends GameApplication {
                         repositionBall(getBallEntity());
                     }
                     if(hw2.winner()){
-                        getAudioPlayer().playSound("tada.wav");
+                        getAudioPlayer().playSound("youwin.wav");
                         Font largeFont = new Font("Winner",50);
-                        Text winnerText = new Text("CONGRATULATIONS YOU WIN!");
+                        Text winnerText = getUIFactory().newText("CONGRATULATIONS YOU WIN!", Color.WHITE,24.0);
                         winnerText.setTranslateX(250);
                         winnerText.setTranslateY(350);
                         winnerText.setFont(largeFont);
                         getGameScene().addUINode(winnerText);
                         Font largeFontRestart = new Font("gameOver",25);
-                        Text gameWin = new Text("Press ENTER to restart Game...");
+                        Text gameWin = getUIFactory().newText("Press ENTER to restart Game...", Color.WHITE,24.0);
                         gameWin.setTranslateX(425);
                         gameWin.setTranslateY(400);
                         gameWin.setFont(largeFontRestart);
@@ -284,6 +285,7 @@ public class BreakoutGameApp extends GameApplication {
             protected void onHitBoxTrigger(Entity ball, Entity wall, HitBox boxBall, HitBox boxWall) {
                 //changeBallVelocity(ball,1);
                 if (boxWall.getName().equals("BOT")) {
+                    getAudioPlayer().playSound("wasted.wav");
                     ball.removeFromWorld();
                     hw2.dropBall();
                     setUInumberOfBalls(hw2.getBallsLeft());
@@ -292,14 +294,14 @@ public class BreakoutGameApp extends GameApplication {
                 if(hw2.isGameOver()){
                     getAudioPlayer().playSound("gameover.wav");
                     Font largeFont = new Font("gameOver",100);
-                    Text gameOverText = new Text("GAME OVER");
+                    Text gameOverText = getUIFactory().newText("GAME OVER", Color.WHITE,24.0);
                     gameOverText.setTranslateX(300);
                     gameOverText.setTranslateY(350);
                     gameOverText.setFont(largeFont);
                     getGameScene().addUINode(gameOverText);
 
                     Font largeFontRestart = new Font("gameOver",25);
-                    Text gameRestart = new Text("Press ENTER to restart Game...");
+                    Text gameRestart = getUIFactory().newText("Press ENTER to restart Game...", Color.WHITE,24.0);
                     gameRestart.setTranslateX(425);
                     gameRestart.setTranslateY(400);
                     gameRestart.setFont(largeFontRestart);

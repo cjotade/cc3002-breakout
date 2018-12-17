@@ -74,7 +74,7 @@ public class BreakoutFactory {
         return Entities.builder()
                 .at(x, y)
                 .type(BreakoutType.BALL)
-                .viewFromTextureWithBBox("ball_icon.png") //ball_icon
+                .viewFromTextureWithBBox("moon1.png")
                 .with(physics,new CollidableComponent(true))
                 .build();
     }
