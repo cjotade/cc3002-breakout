@@ -1,5 +1,6 @@
 package gui;
 
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
@@ -65,9 +66,6 @@ public class BreakoutGameApp extends GameApplication {
         return getGameWorld().getSingleton(BreakoutType.BAR).get();
     }
 
-    private PhysicsComponent getBallComponent() {
-        return getGameWorld().getSingleton(BreakoutType.BALL).get().getComponent(PhysicsComponent.class);
-    }
 
     private Entity getBallEntity() {
         return getGameWorld().getSingleton(BreakoutType.BALL).get();
@@ -90,6 +88,14 @@ public class BreakoutGameApp extends GameApplication {
     }
 
     @Override
+    protected void preInit() {
+        String backgroundMusic = "background.mpeg";
+        getAudioPlayer().loopBGM(backgroundMusic);
+        getAudioPlayer().setGlobalMusicVolume(backgroundMusic.equals("background.mpeg")? 0.5:0.2);
+        getAudioPlayer().setGlobalSoundVolume(1.5);
+    }
+
+    @Override
     protected void initGame() {
         Entity bar = newBar(300, 700,BreakoutType.BAR);
         getGameWorld().addEntity(bar);
@@ -97,6 +103,8 @@ public class BreakoutGameApp extends GameApplication {
         getGameWorld().addEntity(ball);
         Entity wall = newWall();
         getGameWorld().addEntity(wall);
+        Entity background = newBackground();
+        getGameWorld().addEntity(background);
 
         hw2 = new HomeworkTwoFacade();
         setUInumberOfBalls(hw2.getBallsLeft());
@@ -158,7 +166,7 @@ public class BreakoutGameApp extends GameApplication {
                 int seed = (int)(System.currentTimeMillis());
                 if(!hw2.getCurrentLevel().isPlayableLevel() && !hw2.isGameOver()){
                     brickEntityList = new ArrayList<>();
-                    Level level = hw2.newLevelWithBricksFull("Level",2, 0.5, 1,seed);
+                    Level level = hw2.newLevelWithBricksFull("Level",30, 0.5, 0.5,seed);
                     hw2.setCurrentLevel(level);
                     addHitteablesToEntities();
                     addEntitiesToGameWorld();
@@ -167,7 +175,7 @@ public class BreakoutGameApp extends GameApplication {
                     System.out.println("Nuevo Primer Nivel");
                 }
                 else {
-                    Level newLevel = hw2.newLevelWithBricksFull("nextLevel", 3, 0.3, 1, seed);
+                    Level newLevel = hw2.newLevelWithBricksFull("nextLevel", 30, 0.3, 0.5, seed);
                     hw2.addPlayingLevel(newLevel);
                     incUIlevelsLeft(+1);
                     System.out.println("Añadiste un nuevo Nivel");
@@ -210,12 +218,29 @@ public class BreakoutGameApp extends GameApplication {
             @Override
             protected void onCollisionBegin(Entity ball, Entity brick) {
                 changeBallVelocity(ball,0.7);
+                showEffect((ball.getX()+brick.getX())/2,(ball.getY()+brick.getY())/2);
             }
 
             @Override
             protected void onCollision(Entity ball, Entity brick) {
                 getBrickComponent(brick).hitBrick();
-                if (getBrickComponent(brick).isDestroyed()) {
+                boolean isDestroyed = getBrickComponent(brick).isDestroyed();
+                if(getBrickComponent(brick).isWoodenComponent()){
+                    getAudioPlayer().playSound(isDestroyed?  "r2d2.wav":"woodBrickSound.wav");
+                    if(getBrickComponent(brick).remainingHits() == 1) {
+                        brick.setView(FXGL.getAssetLoader().loadTexture("woodenBrickDestroyed.png", 100, 30));
+                    }
+                }
+                if(getBrickComponent(brick).isMetalComponent()){
+                    getAudioPlayer().playSound(isDestroyed?  "r2d2.wav":"metalBrickSound.wav");
+                    if(getBrickComponent(brick).remainingHits() == 3) {
+                        brick.setView(FXGL.getAssetLoader().loadTexture("metalBrickDestroyed.png", 100, 30));
+                    }
+                }
+                if(getBrickComponent(brick).isGlassComponent()) {
+                    getAudioPlayer().playSound("glassBrickSound.wav");
+                }
+                if (isDestroyed) {
                     if(getBrickComponent(brick).isMetalComponent()){
                         Entity newBallMetal = newBall(getBarEntity().getCenter().getX(),getBarEntity().getY()-10);
                          getGameWorld().addEntity(newBallMetal);
@@ -236,6 +261,7 @@ public class BreakoutGameApp extends GameApplication {
                         repositionBall(getBallEntity());
                     }
                     if(hw2.winner()){
+                        getAudioPlayer().playSound("tada.wav");
                         Font largeFont = new Font("Winner",50);
                         Text winnerText = new Text("CONGRATULATIONS YOU WIN!");
                         winnerText.setTranslateX(250);
@@ -264,6 +290,7 @@ public class BreakoutGameApp extends GameApplication {
                     System.out.println("Bola perdida");
                 }
                 if(hw2.isGameOver()){
+                    getAudioPlayer().playSound("gameover.wav");
                     Font largeFont = new Font("gameOver",100);
                     Text gameOverText = new Text("GAME OVER");
                     gameOverText.setTranslateX(300);
@@ -277,6 +304,7 @@ public class BreakoutGameApp extends GameApplication {
                     gameRestart.setTranslateY(400);
                     gameRestart.setFont(largeFontRestart);
                     getGameScene().addUINode(gameRestart);
+
                 }
 
                 if(!isPresentBall() && !hw2.isGameOver()) {
@@ -380,7 +408,7 @@ public class BreakoutGameApp extends GameApplication {
         btnCreateLevel.setFont(fontCustom);
         btnCreateLevel.setOnAction(event -> {
             if(!textFieldName.getText().isEmpty() && !textFieldNumberBricks.getText().isEmpty() && !textFieldGlass.getText().isEmpty() && !textFieldMetal.getText().isEmpty()) {
-                Level customLevel = hw2.newLevelWithBricksFull(textFieldName.getText(), Integer.parseInt(textFieldNumberBricks.getText()), Integer.parseInt(textFieldGlass.getText()), Integer.parseInt(textFieldMetal.getText()), 1);
+                Level customLevel = hw2.newLevelWithBricksFull(textFieldName.getText(), Integer.parseInt(textFieldNumberBricks.getText()), Double.parseDouble(textFieldGlass.getText()), Double.parseDouble(textFieldMetal.getText()), 1);
                 if (!hw2.getCurrentLevel().isPlayableLevel() && !hw2.isGameOver()) {
                     brickEntityList = new ArrayList<>();
                     hw2.setCurrentLevel(customLevel);
@@ -476,6 +504,16 @@ public class BreakoutGameApp extends GameApplication {
 
     private void addEntitiesToGameWorld(){
         for(Entity entity : brickEntityList){
+            BrickComponent brickComp = entity.getComponent(BrickComponent.class);
+            if(brickComp.isMetalComponent()) {
+                entity.setView(FXGL.getAssetLoader().loadTexture("metalBrick.png", 100, 30));
+            }
+            if(brickComp.isWoodenComponent()) {
+                entity.setView(FXGL.getAssetLoader().loadTexture("woodenBrick.png", 100, 30));
+            }
+            if(brickComp.isGlassComponent()) {
+                entity.setView(FXGL.getAssetLoader().loadTexture("glassBrickDestroyed.png", 100, 30));
+            }
             getGameWorld().addEntity(entity);
         }
     }
@@ -546,6 +584,16 @@ public class BreakoutGameApp extends GameApplication {
 
     }
 
+    /**
+     * Show an effect that disappear in 0.1 seconds. Use when ball hit bricks entities.
+     * @param x Position in x axis to show effect.
+     * @param y Position in y axis to show efect.
+     */
+    private void showEffect(double x, double y){
+        Entity explosion = newFireEffect(x,y);
+        getGameWorld().addEntity(explosion);
+        getMasterTimer().runOnceAfter(explosion::removeFromWorld, Duration.seconds(0.3));
+    }
 
 
     public static void main(String[] args) {

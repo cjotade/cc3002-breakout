@@ -19,7 +19,20 @@ public class BrickComponent extends Component {
         return brick.isDestroyed();
     }
 
+    public int remainingHits(){
+        return brick.remainingHits();
+    }
+
     public boolean isMetalComponent(){
         return brick.isMetalBrick();
     }
+
+    public boolean isWoodenComponent(){
+        return brick.isWoodenBrick();
+    }
+
+    public boolean isGlassComponent(){
+        return brick.isGlassBrick();
+    }
+
 }

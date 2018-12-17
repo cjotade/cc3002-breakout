@@ -2,7 +2,11 @@ package gui;
 
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.RenderLayer;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.particle.ParticleComponent;
+import com.almasb.fxgl.particle.ParticleEmitter;
+import com.almasb.fxgl.particle.ParticleEmitters;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
@@ -10,6 +14,7 @@ import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import gui.control.BarComponent;
 import gui.control.BrickComponent;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import logic.brick.Brick;
@@ -53,7 +58,8 @@ public class BreakoutFactory {
         return Entities.builder()
                 .at(x, y)
                 .type(breakoutType.BAR)
-                .viewFromNodeWithBBox(new Rectangle(180, 25, Color.BLUE))
+                //.viewFromNodeWithBBox(new Rectangle(180, 25, Color.BLUE))
+                .viewFromTextureWithBBox("bar5.png") //ball_icon
                 .with(physics,new CollidableComponent(true))
                 .with(new BarComponent())
                 .build();
@@ -78,6 +84,34 @@ public class BreakoutFactory {
         walls.setType(BreakoutType.WALL);
         walls.addComponent(new CollidableComponent(true));
         return walls;
+    }
+
+    /**
+     * Get a new entity with game background to set.
+     * @return background entity
+     */
+    static Entity newBackground() {
+        return Entities.builder()
+                .viewFromTexture("back5.png")
+                .renderLayer(RenderLayer.BACKGROUND)
+                .build();
+    }
+
+    /**
+     * Get a new explosion effect entity.
+     * @param x Position in x axis.
+     * @param y Position in y axis.
+     * @return effect entity
+     */
+    static Entity newFireEffect(double x, double y){
+        ParticleEmitter emitter = ParticleEmitters.newFireEmitter();
+        emitter.setColor(Color.ORANGE);
+        emitter.setBlendMode(BlendMode.HARD_LIGHT);
+        ParticleComponent component = new ParticleComponent(emitter);
+        return Entities.builder()
+                .at(x,y)
+                .with(component)
+                .build();
     }
 
 }
