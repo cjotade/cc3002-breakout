@@ -5,8 +5,12 @@ import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.physics.PhysicsComponent;
-import com.almasb.fxgl.physics.box2d.dynamics.Body;
 
+/**
+ * Class for a Bar Component
+ *
+ * @author Camilo Jara Do Nascimento
+ */
 public class BarComponent extends Component {
     private static final float BOUNCE_FACTOR = 1.5f;
     private static final float SPEED_DECAY = 0.66f;
@@ -28,10 +32,18 @@ public class BarComponent extends Component {
         physics.setBodyLinearVelocity(velocity);
     }
 
+    /**
+     * Set bar's velocity in order to slice to the left
+     *
+     */
     public void left(){
         velocity.set(-speed,0);
     }
 
+    /**
+     * Set bar's velocity in order to slice to the right
+     *
+     */
     public void right(){
         velocity.set(speed,0);
     }

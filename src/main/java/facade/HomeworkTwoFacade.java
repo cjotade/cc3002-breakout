@@ -183,6 +183,11 @@ public class HomeworkTwoFacade {
         return game.winner();
     }
 
+    /**
+     * Gets the cumulative Points of the current Level.
+     *
+     * @return the cumulative Level Points
+     */
     public int getAcumLevelPoints() {
         return game.getAcumLevelPoints();
     }

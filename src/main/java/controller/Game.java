@@ -22,9 +22,18 @@ public class Game implements Observer,Visitor {
     private int currentPoints;
     private int acumLevelPoints;
 
+    /**
+     * Default constructor for a Game
+     */
     public Game(){
         this(3);
     }
+
+    /**
+     * Constructor for a Game given the number of balls
+     *
+     * @param balls the number of balls
+     */
     public Game(int balls) {
         this.balls = balls;
         currentLevel = new NullLevel();
@@ -61,7 +70,7 @@ public class Game implements Observer,Visitor {
     }
 
     /**
-     * Gets the number of {@link Brick} in the current level, that are still not destroyed
+     * Gets the number of {@link Brick} in the current level, that are still not destroyed.
      *
      * @return the number of intact bricks in the current level
      */
@@ -204,6 +213,11 @@ public class Game implements Observer,Visitor {
         return !getCurrentLevel().isPlayableLevel() && currentPoints >0;
     }
 
+    /**
+     * Gets the cumulative Points of the current Level.
+     *
+     * @return the cumulative Level Points
+     */
     public int getAcumLevelPoints() {
         return acumLevelPoints;
     }

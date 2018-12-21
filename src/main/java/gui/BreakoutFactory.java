@@ -21,12 +21,23 @@ import logic.brick.Brick;
 
 import java.util.List;
 
-import static com.almasb.fxgl.app.DSLKt.texture;
-
+/**
+ * Breakout Factory that creates Entitys.
+ *
+ * @author Camilo Jara Do Nascimento
+ */
 public class BreakoutFactory {
 
     private List<Entity> BrickEntityList;
 
+    /**
+     * Creates a new brick Entity given parameters
+     *
+     * @param x     the x position of the new brick Entity
+     * @param y     the y position of the new brick Entity
+     * @param brick the {@link logic.brick.Brick} object
+     * @return the new brick Entity
+     */
     public static Entity newBrick(double x, double y, Brick brick) {
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.KINEMATIC);
@@ -51,6 +62,14 @@ public class BreakoutFactory {
                 .build();
     }
 
+    /**
+     * Creates a new bar Entity given parameters
+     *
+     * @param x             the x position of the new bar Entity
+     * @param y             the y position of the new bar Entity
+     * @param breakoutType  a {@link gui.BreakoutType}
+     * @return a new bar Entity
+     */
     public static Entity newBar(double x, double y, BreakoutType breakoutType){
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.KINEMATIC);
@@ -58,18 +77,23 @@ public class BreakoutFactory {
         return Entities.builder()
                 .at(x, y)
                 .type(breakoutType.BAR)
-                //.viewFromNodeWithBBox(new Rectangle(180, 25, Color.BLUE))
-                .viewFromTextureWithBBox("bar5.png") //ball_icon
+                .viewFromTextureWithBBox("bar5.png")
                 .with(physics,new CollidableComponent(true))
                 .with(new BarComponent())
                 .build();
     }
 
+    /**
+     * Creates a new ball Entity given parameters
+     *
+     * @param x the x position of the new ball Entity
+     * @param y the y position of the new ball Entity
+     * @return
+     */
     public static Entity newBall(double x, double y) {
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.DYNAMIC);
         physics.setFixtureDef(new FixtureDef().restitution(1f).density(0.1f));
-        //physics.setOnPhysicsInitialized(() -> physics.setLinearVelocity(-50, -1000));
 
         return Entities.builder()
                 .at(x, y)
@@ -79,6 +103,11 @@ public class BreakoutFactory {
                 .build();
     }
 
+    /**
+     * Creates new walls Entity
+     *
+     * @return the walls
+     */
     public static Entity newWall(){
         Entity walls = Entities.makeScreenBounds(100);
         walls.setType(BreakoutType.WALL);
@@ -88,6 +117,7 @@ public class BreakoutFactory {
 
     /**
      * Get a new entity with game background to set.
+     *
      * @return background entity
      */
     static Entity newBackground() {
@@ -98,10 +128,11 @@ public class BreakoutFactory {
     }
 
     /**
-     * Get a new explosion effect entity.
-     * @param x Position in x axis.
-     * @param y Position in y axis.
-     * @return effect entity
+     * Get a new Fire effect entity.
+     *
+     * @param x the x position of the new fire Entity
+     * @param y the y position of the new fire Entity
+     * @return the effect entity
      */
     static Entity newFireEffect(double x, double y){
         ParticleEmitter emitter = ParticleEmitters.newFireEmitter();

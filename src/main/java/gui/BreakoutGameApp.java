@@ -12,22 +12,14 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.settings.GameSettings;
-import gui.control.BallComponent;
 import gui.control.BarComponent;
 import gui.control.BrickComponent;
-import javafx.animation.FadeTransition;
-import javafx.animation.Transition;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -36,19 +28,18 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 import logic.brick.Brick;
 import logic.level.Level;
-import logic.level.RealLevel;
+import org.jetbrains.annotations.NotNull;
 
-import java.awt.event.ActionEvent;
-import java.beans.EventHandler;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static com.sun.glass.ui.Cursor.setVisible;
+
 import static gui.BreakoutFactory.*;
 
-
+/**
+ * Breakout Game Application.
+ *
+ * @author Camilo Jara Do Nascimento
+ */
 public class BreakoutGameApp extends GameApplication {
     private HomeworkTwoFacade hw2;
     private List<Entity> brickEntityList;
@@ -67,12 +58,11 @@ public class BreakoutGameApp extends GameApplication {
         return getGameWorld().getSingleton(BreakoutType.BAR).get();
     }
 
-
     private Entity getBallEntity() {
         return getGameWorld().getSingleton(BreakoutType.BALL).get();
     }
 
-    private BrickComponent getBrickComponent(Entity brick){
+    private BrickComponent getBrickComponent(@NotNull Entity brick){
         return brick.getComponent(BrickComponent.class);
     }
 
@@ -165,9 +155,10 @@ public class BreakoutGameApp extends GameApplication {
             @Override
             protected void onActionBegin() {
                 int seed = (int)(System.currentTimeMillis());
+                Random random = new Random();
                 if(!hw2.getCurrentLevel().isPlayableLevel() && !hw2.isGameOver()){
                     brickEntityList = new ArrayList<>();
-                    Level level = hw2.newLevelWithBricksFull("Level",30, 0.5, 0.5,seed);
+                    Level level = hw2.newLevelWithBricksFull("Level",random.nextInt(49)+1, random.nextDouble(), random.nextDouble(),seed);
                     hw2.setCurrentLevel(level);
                     addHitteablesToEntities();
                     addEntitiesToGameWorld();
@@ -176,7 +167,7 @@ public class BreakoutGameApp extends GameApplication {
                     System.out.println("Nuevo Primer Nivel");
                 }
                 else {
-                    Level newLevel = hw2.newLevelWithBricksFull("nextLevel", 30, 0.3, 0.5, seed);
+                    Level newLevel = hw2.newLevelWithBricksFull("nextLevel", random.nextInt(49)+1, random.nextDouble(), random.nextDouble(), seed);
                     hw2.addPlayingLevel(newLevel);
                     incUIlevelsLeft(+1);
                     System.out.println("Añadiste un nuevo Nivel");
@@ -208,17 +199,18 @@ public class BreakoutGameApp extends GameApplication {
 
     @Override
     protected void initPhysics() {
+        //getPhysicsWorld().setGravity(0,0);
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(BreakoutType.BAR,BreakoutType.BALL) {
             @Override
             protected void onCollisionBegin(Entity bar, Entity ball) {
-                changeBallVelocity(ball,1.4);
+                changeBallVelocity(ball,1.5);
             }
         });
 
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(BreakoutType.BALL, BreakoutType.BRICK) {
             @Override
             protected void onCollisionBegin(Entity ball, Entity brick) {
-                changeBallVelocity(ball,0.7);
+                changeBallVelocity(ball,0.6);
                 showEffect((ball.getX()+brick.getX())/2,(ball.getY()+brick.getY())/2);
             }
 
@@ -243,9 +235,10 @@ public class BreakoutGameApp extends GameApplication {
                 }
                 if (isDestroyed) {
                     if(getBrickComponent(brick).isMetalComponent()){
-                        Entity newBallMetal = newBall(getBarEntity().getCenter().getX(),getBarEntity().getY()-10);
-                         getGameWorld().addEntity(newBallMetal);
-                        impulseBall(newBallMetal);
+                        //Entity newBallMetal = newBall(getBarEntity().getCenter().getX(),getBarEntity().getY()-10);
+                        //getGameWorld().addEntity(newBallMetal);
+                        //impulseBall(newBallMetal);
+                        setUInumberOfBalls(hw2.getBallsLeft());
                         System.out.println("Ganaste una bola");
                     }
                     setUIgameScore(hw2.getCurrentPoints());
@@ -283,7 +276,7 @@ public class BreakoutGameApp extends GameApplication {
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(BreakoutType.BALL,BreakoutType.WALL) {
             @Override
             protected void onHitBoxTrigger(Entity ball, Entity wall, HitBox boxBall, HitBox boxWall) {
-                //changeBallVelocity(ball,1);
+                changeBallVelocity(ball,0.6);
                 if (boxWall.getName().equals("BOT")) {
                     getAudioPlayer().playSound("wasted.wav");
                     ball.removeFromWorld();
@@ -526,19 +519,19 @@ public class BreakoutGameApp extends GameApplication {
         }
     }
 
-    private void repositionBall(Entity ball){
+    private void repositionBall(@NotNull Entity ball){
         Point2D position = new Point2D(getBarEntity().getCenter().getX(),getBarEntity().getY()-30);
         ball.getComponent(PhysicsComponent.class).reposition(position);
         ball.getComponent(PhysicsComponent.class).setLinearVelocity(0,0);
     }
 
 
-    private void impulseBall(Entity ball){
+    private void impulseBall(@NotNull Entity ball){
         PhysicsComponent physicsComponent = ball.getComponent(PhysicsComponent.class);
         physicsComponent.setLinearVelocity(-50, -1000);
     }
 
-    private void changeBallVelocity(Entity ball, double velocity){
+    private void changeBallVelocity(@NotNull Entity ball, double velocity){
         PhysicsComponent physicsComponent = ball.getComponent(PhysicsComponent.class);
         double velocityX = physicsComponent.getVelocityX();
         double velocityY = physicsComponent.getVelocityY();

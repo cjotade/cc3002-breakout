@@ -54,10 +54,25 @@ public interface Brick {
      */
     void subscribeGameObserver(Game o);
 
+    /**
+     * Gets whether the brick object is Glass Brick.
+     *
+     * @return true if the brick is Glass, false otherwise
+     */
     boolean isGlassBrick();
 
+    /**
+     * Gets whether the brick object is Wooden Brick.
+     *
+     * @return true if the brick is Wooden, false otherwise
+     */
     boolean isWoodenBrick();
 
+    /**
+     * Gets whether the brick object is Metal Brick.
+     *
+     * @return true if the brick is Metal, false otherwise
+     */
     boolean isMetalBrick();
 
 }
