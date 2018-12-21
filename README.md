@@ -61,3 +61,4 @@ Las teclas son las dadas por enunciado salvo la tecla TAB que permite abrir un p
 
 ### Notas
 Se utilizó codigo propio de tarea 2.
+Los diagramas UML de la tarea 3 contienen el postfix Final.
